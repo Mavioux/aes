@@ -130,18 +130,64 @@ class AES {
 
         void Encrypt(int ciphertext[]) {
             int state[16];
-            memcpy(state, this->plaintext, plaintext_len * sizeof(int));
+            int key[16];
+            int keys[11][16];
+            for(uint8_t i = 0; i < 4; i++){
+                for(uint8_t j = 0; j < 4; j++){
+                    state[4 * i + j] = this->plaintext[4 * j + i];
+                    key[4 * i + j] = this->key[4 * j + i];
+                } 
+            }
+            memcpy(keys[0], key, this->key_len * sizeof(int));   
+            KeySubstitute(keys);  
             for(uint8_t i = 0; i < this->number_of_rounds - 1; i++) {
-                AddRoundKey(state, this->key);
+                AddRoundKey(state, key);
                 SubBytes(state);
                 ShiftRows(state);
                 MixColumns(state);
             }
-            AddRoundKey(state, this->key);
+            AddRoundKey(state, key);
             SubBytes(state);
             ShiftRows(state);
 
             memcpy(ciphertext, state, plaintext_len * sizeof(int));
+        }
+
+        void KeySubstitute(int keys[][16]) {
+            int w[10][4][4];
+            memcpy(w[0], key, this->key_len * sizeof(int));
+            int N = 4;
+            int R = this->number_of_rounds;
+
+            // Rot and Sub                        
+            // first iteration
+            for(uint8_t i = 0; i < 4; i++) {
+                for(uint8_t j = 0; j < 4; j++) {
+                    w[0][i][j] = keys[0][4 * j + i];
+                    w[0][i][j] = sbox[w[0][i][j] / 16][w[0][i][j] % 16];
+                    printf("%x ", w[0][i][j]);
+                }
+                printf("\n");
+            }
+
+            
+
+            // The rest of the iterations
+            for(uint8_t k = 0; k < 9; k++) {
+
+
+                for(uint8_t i = 0; i < 4; i++) {
+                    for(uint8_t j = 0; j < 4; j++) {
+                        w[k+1][i][j] = w[k][i][j];
+                        w[k+1][i][j] = sbox[w[k+1][i][j] / 16][w[k+1][i][j] % 16];
+                        printf("%x ", w[k][i][j]);
+                    }
+                    printf("\n");
+                }
+
+
+            }
+            
         }
 
         void AddRoundKey(int state[], int key[]) {
