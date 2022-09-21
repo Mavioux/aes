@@ -96,6 +96,17 @@ const int galois_mul[16] = {
     3, 1, 1, 2
 };
 
+const int RCON[10][4] = {{0x01, 0x00, 0x00, 0x00},
+                         {0x02, 0x00, 0x00, 0x00},
+                         {0x04, 0x00, 0x00, 0x00},
+                         {0x08, 0x00, 0x00, 0x00},
+                         {0x10, 0x00, 0x00, 0x00}, 
+                         {0x20, 0x00, 0x00, 0x00}, 
+                         {0x40, 0x00, 0x00, 0x00}, 
+                         {0x80, 0x00, 0x00, 0x00}, 
+                         {0x1b, 0x00, 0x00, 0x00}, 
+                         {0x36, 0x00, 0x00, 0x00}};
+
 class AES {   
     int plaintext[16];
     int key[16];
@@ -131,72 +142,105 @@ class AES {
         void Encrypt(int ciphertext[]) {
             int state[16];
             int key[16];
+            int temp_keys[11][16];
             int keys[11][16];
+
+            KeyExpansion(this->key, temp_keys); 
+
             for(uint8_t i = 0; i < 4; i++){
                 for(uint8_t j = 0; j < 4; j++){
                     state[4 * i + j] = this->plaintext[4 * j + i];
-                    key[4 * i + j] = this->key[4 * j + i];
                 } 
             }
-            memcpy(keys[0], key, this->key_len * sizeof(int));   
-            KeySubstitute(keys);  
-            for(uint8_t i = 0; i < this->number_of_rounds - 1; i++) {
-                AddRoundKey(state, key);
+
+            for(uint8_t k = 0; k < 11; k++) {
+                for(uint8_t i = 0; i < 4; i++){
+                    for(uint8_t j = 0; j < 4; j++){
+                        keys[k][4 * i + j] = temp_keys[k][4 * j + i];
+                    } 
+                }
+            }
+            AddRoundKey(state, keys[0]);
+            for(uint8_t i = 1; i < this->number_of_rounds; i++) {
                 SubBytes(state);
                 ShiftRows(state);
                 MixColumns(state);
+                AddRoundKey(state, keys[i]);
             }
-            AddRoundKey(state, key);
             SubBytes(state);
             ShiftRows(state);
-
-            memcpy(ciphertext, state, plaintext_len * sizeof(int));
+            AddRoundKey(state, keys[10]);
+            
+            for(uint8_t i = 0; i < 4; i++){
+                for(uint8_t j = 0; j < 4; j++){
+                    ciphertext[4 * i + j] = state[4 * j + i];
+                } 
+            }
         }
 
-        void KeySubstitute(int keys[][16]) {
-            int w[10][4][4];
-            memcpy(w[0], key, this->key_len * sizeof(int));
+        void KeyExpansion(int key[16], int keys[11][16]) {
             int N = 4;
-            int R = this->number_of_rounds;
 
-            // Rot and Sub                        
-            // first iteration
-            for(uint8_t i = 0; i < 4; i++) {
-                for(uint8_t j = 0; j < 4; j++) {
-                    w[0][i][j] = keys[0][4 * j + i];
-                    w[0][i][j] = sbox[w[0][i][j] / 16][w[0][i][j] % 16];
-                    printf("%x ", w[0][i][j]);
-                }
-                printf("\n");
-            }
+            // w0-w3 set to initial key
+            int w[44][4];
+            memcpy(&w[0], &key[0], 4 * sizeof(int));
+            memcpy(&w[1], &key[4], 4 * sizeof(int));
+            memcpy(&w[2], &key[8], 4 * sizeof(int));
+            memcpy(&w[3], &key[12], 4 * sizeof(int));
 
-            
+            for(uint8_t j = 0; j < 4; j++) {
+                memcpy(&keys[0][j * 4], &w[j][0], 4 * sizeof(int));
+            }   
 
-            // The rest of the iterations
-            for(uint8_t k = 0; k < 9; k++) {
+            //w4-w43
+            for(int i = 4; i < 44; i++) {
+                if(i % N == 0) {
+                    int w1[4];
+                    memcpy(w1, &w[i - N], 4 * sizeof(int));
+                    int w2[4];
+                    memcpy(w2, &w[i - 1], 4 * sizeof(int));
+                    RotWord(w2);
+                    SubWord(w2);
 
-
-                for(uint8_t i = 0; i < 4; i++) {
                     for(uint8_t j = 0; j < 4; j++) {
-                        w[k+1][i][j] = w[k][i][j];
-                        w[k+1][i][j] = sbox[w[k+1][i][j] / 16][w[k+1][i][j] % 16];
-                        printf("%x ", w[k][i][j]);
+                        w[i][j] = w1[j] ^ w2[j] ^ RCON[i/N-1][j];
                     }
-                    printf("\n");
+                }
+                else {
+                    int w1[4];
+                    memcpy(w1, &w[i - N], 4 * sizeof(int));
+                    int w2[4];
+                    memcpy(w2, &w[i - 1], 4 * sizeof(int));
+
+                    for(uint8_t j = 0; j < 4; j++) {
+                        w[i][j] = w1[j] ^ w2[j];
+                    }
                 }
 
-
+                memcpy(&keys[i/4][(i % 4) * 4], &w[i][0], 4 * sizeof(int));  
             }
-            
+        }
+
+        void RotWord(int w[4]) {
+            int temp = w[0];
+            w[0] = w[1];
+            w[1] = w[2];
+            w[2] = w[3];  
+            w[3] = temp;         
+        }
+
+        void SubWord(int w[4]) {
+            for(uint8_t i = 0; i < 4; i++) {
+                w[i] = sbox[w[i] / 16][w[i] % 16];
+            }
         }
 
         void AddRoundKey(int state[], int key[]) {
             int temp[this->plaintext_len];
-            for(uint8_t i = 0; i < plaintext_len; i++) {
+            for(uint8_t i = 0; i < this->plaintext_len; i++) {
                 temp[i] = state[i] ^ key[i];
             }
-            std::memcpy(this->key, temp, key_len * sizeof(int));
-            std::memcpy(state, temp, key_len * sizeof(int));
+            std::memcpy(state, temp, this->plaintext_len * sizeof(int));
         }
 
         void SubBytes(int state[]) {

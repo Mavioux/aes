@@ -15,9 +15,13 @@ int main(){
 
     AES aes(plaintext, key, aes_size);
     int ciphertext[16];
-    aes.Encrypt(ciphertext);  
+    aes.Encrypt(ciphertext);
+
 
     for(int i = 0; i < 16; i++) {
         printf("%x ", ciphertext[i]);
     }
+
+    // int keys[11][16];
+    // aes.KeyExpansion2(key, keys);
 }
