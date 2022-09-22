@@ -1,10 +1,8 @@
 #include "aes.hpp"
 
-#include<stdio.h>
-#include<iostream>
-#include<bitset>
-
-using namespace std;
+#include <stdio.h>
+#include <iostream>
+#include <bitset>
 
 int main(){
     AES_SIZE aes_size = AES_128;
@@ -14,13 +12,15 @@ int main(){
 
 
     AES aes(aes_size);
-    // int ciphertext[16];
-    // aes.Encrypt(plaintext, key, ciphertext);
+    int ciphertext[16];
+    aes.Encrypt(plaintext, key, ciphertext);
 
 
-    // for(int i = 0; i < 16; i++) {
-    //     printf("%x ", ciphertext[i]);
-    // }
+    for(int i = 0; i < 16; i++) {
+        printf("%x ", ciphertext[i]);
+    }
+
+    printf("\n");
 
     int ciphertext_dec[16] = {0x69, 0xc4, 0xe0, 0xd8, 0x6a, 0x7b, 0x04, 0x30, 0xd8, 0xcd, 0xb7, 0x80, 0x70, 0xb4, 0xc5, 0x5a};
     int plaintext_dec[16];
