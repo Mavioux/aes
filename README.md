@@ -1,1 +1,1 @@
-# verilog_aes
+# AES in C++ and Verilog
