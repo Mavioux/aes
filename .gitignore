@@ -2,3 +2,7 @@ bin/
 .vscode/
 install
 *.o
+aes.mpf
+work
+*.wlf
+*.mti
