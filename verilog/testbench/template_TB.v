@@ -10,10 +10,10 @@ module rotWord_TB ();
 
     reg [0:63] testVectors[3:0];
 
-    rotWord rotWordModule(w1_in, w1_out);
+    rotWord rotWordModule(clk, reset, w1_in, w1_out);
 
     initial begin
-        $readmemh("../rotWordVectors.tv",testVectors);
+        $readmemb("../rotWordVectors.tv",testVectors);
         clk = 0;
         reset = 0;
         vectornum = 0; errors = 0;
