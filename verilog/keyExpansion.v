@@ -7,7 +7,7 @@ module KeyExpansion (
     parameter N = 4;
 
     // set w0 - w3
-    initial begin
+    always @(key[0:127]) begin
         keys[0:127] = key[0:127];
     end
 
