@@ -1,10 +1,10 @@
 module subWord (
-    input wire [0:31] w_in,
-    output reg [0:31] w_out
+    input wire [0:7] w_in,
+    output reg [0:7] w_out
 );
 
-    always @(w_in) begin
-        case(w_in)
+    always @(w_in[0:7]) begin
+        case(w_in[0:7])
             32'h0 : w_out = 32'h63;
             32'h1 : w_out = 32'h7C;
             32'h2 : w_out = 32'h77;

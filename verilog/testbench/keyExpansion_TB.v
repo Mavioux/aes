@@ -12,7 +12,7 @@ module keyExpansion_TB ();
     KeyExpansion keyExpansionModule(clk, reset, key, keys);
 
     initial begin
-        // $readmemh("../verilog/testbench/testvectors/keyExpansionVectors.tv",testVectors);
+        // $readmemh("./verilog/testbench/testvectors/keyExpansionVectors.tv",testVectors);
         clk = 0;
         reset = 0;
         vectornum = 0; errors = 0;
@@ -26,18 +26,18 @@ module keyExpansion_TB ();
         key[0:127] = 128'h0;
     end
 
-    // always@(posedge clk)
-    // begin
-        // if (keys != keys_expected) begin
-        //     $display("Error: inputs = %b", key[0:127]);
-        //     $display(" outputs = %b (%b expected)", keys, keys_expected);
-        //     errors = errors + 1;
-        // end
-        // vectornum = vectornum + 1;
-        // if (testVectors[vectornum] === 1536'bx) begin
-        //     $display("%d tests completed with %d errors", vectornum, errors);
-        //     $finish;
-        // end
-    // end
+    always@(posedge clk)
+    begin
+        if (keys != keys_expected) begin
+            $display("Error: inputs = %b", key[0:127]);
+            $display(" outputs = %b (%b expected)", keys, keys_expected);
+            errors = errors + 1;
+        end
+        vectornum = vectornum + 1;
+        if (testVectors[vectornum] === 1536'bx) begin
+            $display("%d tests completed with %d errors", vectornum, errors);
+            // $finish;
+        end
+    end
     
 endmodule
