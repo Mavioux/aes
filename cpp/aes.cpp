@@ -158,7 +158,7 @@ void AES::AddRoundKey(int state[], int key[]) {
     memcpy(state, temp, 16 * sizeof(int));
 }
 
-void AES::SubBytes(int state[]) {
+void AES::SubBytes(int state[16]) {
     for(uint8_t i = 0; i < 16; i++) {
         state[i] = sbox[state[i] / 16][state[i] % 16];
     }

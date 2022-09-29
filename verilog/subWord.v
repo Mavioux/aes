@@ -1,4 +1,4 @@
-module subWord (
+module SubWord (
     input wire [0:7] w_in,
     output reg [0:7] w_out
 );

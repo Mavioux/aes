@@ -1,4 +1,4 @@
-module rotWord (
+module RotWord (
     input wire [0:31] w_in,
     output reg [0:31] w_out
 );

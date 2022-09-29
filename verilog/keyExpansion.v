@@ -2,7 +2,7 @@ module KeyExpansion (
     input wire clk,
     input wire reset,
     input wire [0:127] key,
-    output reg [0:1407] keys
+    output reg [0:1407] keys,
 );
     parameter N = 4;
 
@@ -18,11 +18,11 @@ module KeyExpansion (
             reg [0:31] w1, w2;
             wire [0:31] w2_rot, w2_sub;
 
-            rotWord rotWordModule(w2[0:31], w2_rot[0:31]);
-            subWord subWordModule1(w2_rot[0:7], w2_sub[0:7]);
-            subWord subWordModule2(w2_rot[8:15], w2_sub[8:15]);
-            subWord subWordModule3(w2_rot[16:23], w2_sub[16:23]);
-            subWord subWordModule4(w2_rot[24:31], w2_sub[24:31]);
+            RotWord rotWordModule(w2[0:31], w2_rot[0:31]);
+            SubWord subWordModule1(w2_rot[0:7], w2_sub[0:7]);
+            SubWord subWordModule2(w2_rot[8:15], w2_sub[8:15]);
+            SubWord subWordModule3(w2_rot[16:23], w2_sub[16:23]);
+            SubWord subWordModule4(w2_rot[24:31], w2_sub[24:31]);
 
             always @(keys[(i - N) * 32 : (i - N) * 32 + 31]) begin
                 w1[0:31] = keys[(i - N) * 32 : (i - N) * 32 + 31];
