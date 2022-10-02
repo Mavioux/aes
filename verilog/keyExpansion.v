@@ -2,9 +2,11 @@ module KeyExpansion (
     input wire clk,
     input wire reset,
     input wire [0:127] key,
-    output reg [0:1407] keys,
+    output reg [0:1407] keys_output
 );
     parameter N = 4;
+
+    reg [0:1407] keys;
 
     // set w0 - w3
     always @(key[0:127]) begin
@@ -69,6 +71,18 @@ module KeyExpansion (
             always @(temp[0:31]) begin
                 keys[i * 32 : i * 32 + 31] = temp[0:31];
             end
+        end
+    end
+
+    genvar m, n;
+        
+    for (m = 0; m < 4; m = m + 1) begin
+        for (j = 0; j < 4; j = j + 1) begin
+            always @(posedge clk) begin
+                if(enable == 1'b1 ) begin
+                    previous_state[32 * m + 8 * j: 32 * m + 8 * j + 7] <= plaintext[32 * j + 4 * i: 32 * j + 4 * i + 7];
+                end
+            end    
         end
     end
     
