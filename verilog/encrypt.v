@@ -10,15 +10,14 @@ module Encrypt (
     reg [0:127] key_expansion_input;
     reg [0:127] previous_state;
     wire [0:127] next_state;
-    wire [0:1407] keys_wire;
-    reg [0:1407] keys;
+    wire [0:1407] keys;
     reg [0:127] key_input;
     reg [0:3] stage_num;
     reg [0:127] key1;
     reg [0:127] key2;
     reg [0:127] previous_state_final;
 
-    KeyExpansion keyExpansionModule(clk, reset, key_expansion_input, keys_wire);
+    KeyExpansion keyExpansionModule(clk, reset, key_expansion_input, keys);
     EncryptBlock encryptBlockModule(previous_state, key_input, next_state);
     EncryptFinalBlock EncryptFinalBlockModule(previous_state_final, key1, key2, ciphertext);
 
@@ -28,7 +27,7 @@ module Encrypt (
         for (j = 0; j < 4; j = j + 1) begin
             always @(posedge clk) begin
                 if(enable == 1'b1 ) begin
-                    previous_state[32 * i + 8 * j: 32 * i + 8 * j + 7] <= plaintext[32 * j + 4 * i: 32 * j + 4 * i + 7];
+                    previous_state[32 * i + 8 * j: 32 * i + 8 * j + 7] = plaintext[32 * j + 8 * i: 32 * j + 8 * i + 7];
                 end
             end    
         end
@@ -93,19 +92,6 @@ module Encrypt (
         else begin
             key_expansion_input = key[0:127];
             stage_num <= 4'd0;
-        end
-    end
-
-    genvar k;
-
-    
-    for (k = 0; k < 11; k = k + 1) begin
-        for (i = 0; i < 4; i = i + 1) begin
-            for (j = 0; j < 4; j = j + 1) begin
-                always @(keys_wire[0:1407]) begin
-                    keys[128 * k + (32 * i + 8 * j) : 128 * k + (32 * i + 8 * j + 7)] = keys_wire[128 * k + (32 * j + 4 * i) : 128 * k + (32 * j + 4 * i + 7)];
-                end
-            end
         end
     end
     

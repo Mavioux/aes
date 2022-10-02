@@ -74,15 +74,16 @@ module KeyExpansion (
         end
     end
 
-    genvar m, n;
-        
-    for (m = 0; m < 4; m = m + 1) begin
-        for (j = 0; j < 4; j = j + 1) begin
-            always @(posedge clk) begin
-                if(enable == 1'b1 ) begin
-                    previous_state[32 * m + 8 * j: 32 * m + 8 * j + 7] <= plaintext[32 * j + 4 * i: 32 * j + 4 * i + 7];
+    
+    genvar k, l, m;
+    
+    for (k = 0; k < 11; k = k + 1) begin
+        for (l = 0; l < 4; l = l + 1) begin
+            for (m = 0; m < 4; m = m + 1) begin
+                always @(keys[0:1407]) begin
+                    keys_output[128 * k + 32 * l + 8 * m : 128 * k + 32 * l + 8 * m + 7] = keys[128 * k + 32 * m + 8 * l : 128 * k + 32 * m + 8 * l + 7]; 
                 end
-            end    
+            end
         end
     end
     
