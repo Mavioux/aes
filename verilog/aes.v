@@ -17,9 +17,9 @@ module AES (
     input wire encrypt, // set 1 for at least on clock cycle to begin encryption or reset encryption process 
     input wire decrypt, // set 1 for at least on clock cycle to begin decryption or reset decryption process  
     input wire [0:127] plaintext_in,
-    inout wire [0:127] ciphertext_out,
+    output wire [0:127] ciphertext_out,
     input wire [0:127] key,
-    output wire [0:127] ciphertext_in,
+    input wire [0:127] ciphertext_in,
     output wire [0:127] plaintext_out   
 );
 

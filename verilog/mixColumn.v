@@ -1,6 +1,6 @@
 module MixColumn1Row (
     input wire [0:31] row,
-    output reg [0:7] output_row
+    output wire [0:7] output_row
 );
     reg [0:7] a, b, c, d;
 
@@ -529,10 +529,14 @@ module MixColumn1Row (
     end
 
     // Multiplication with 1
-    assign c[0:7] = row[16:23];
+    always @(row[16:23]) begin
+        c[0:7] = row[16:23];
+    end
 
     // Multiplication with 1
-    assign d[0:7] = row[24:31];
+    always @(row[24:31]) begin
+        d[0:7] = row[24:31];
+    end
 
     assign output_row = a ^ b ^ c ^ d;
     
@@ -541,7 +545,7 @@ endmodule
 
 module MixColumn2Row (
     input wire [0:31] row,
-    output reg [0:7] output_row
+    output wire [0:7] output_row
 );
     reg [0:7] a, b, c, d;
 
@@ -1070,10 +1074,14 @@ module MixColumn2Row (
     end
 
     // Multiplication with 1
-    assign c[0:7] = row[0:7];
+    always @(row[0:7]) begin
+        c[0:7] = row[0:7];
+    end
 
     // Multiplication with 1
-    assign d[0:7] = row[24:31];
+    always @(row[24:31]) begin
+        d[0:7] = row[24:31];
+    end
 
     assign output_row = a ^ b ^ c ^ d;
     
@@ -1082,7 +1090,7 @@ endmodule
 
 module MixColumn3Row (
     input wire [0:31] row,
-    output reg [0:7] output_row
+    output wire [0:7] output_row
 );
     reg [0:7] a, b, c, d;
 
@@ -1611,10 +1619,14 @@ module MixColumn3Row (
     end
 
     // Multiplication with 1
-    assign c[0:7] = row[0:7];
+    always @(row[0:7]) begin
+        c[0:7] = row[0:7];
+    end
 
     // Multiplication with 1
-    assign d[0:7] = row[8:15];
+    always @( row[8:15]) begin
+        d[0:7] =  row[8:15];
+    end
 
     assign output_row = a ^ b ^ c ^ d;
     
@@ -1623,7 +1635,7 @@ endmodule
 
 module MixColumn4Row (
     input wire [0:31] row,
-    output reg [0:7] output_row
+    output wire [0:7] output_row
 );
     reg [0:7] a, b, c, d;
 
@@ -2152,10 +2164,14 @@ module MixColumn4Row (
     end
 
     // Multiplication with 1
-    assign c[0:7] = row[8:15];
+    always @(row[8:15]) begin
+        c[0:7] = row[8:15];
+    end
 
     // Multiplication with 1
-    assign d[0:7] = row[16:23];
+    always @(row[16:23]) begin
+        d[0:7] = row[16:23];
+    end
 
     assign output_row = a ^ b ^ c ^ d;
     
@@ -2164,7 +2180,7 @@ endmodule
 
 module MixColumn (
     input wire [0:31] row,
-    input reg [0:31] output_row
+    output wire [0:31] output_row
 );
     wire [0:7] a, b, c, d;
 

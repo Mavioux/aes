@@ -1,6 +1,6 @@
 module MixColumn1RowInverse (
     input wire [0:31] row,
-    output reg [0:7] output_row
+    output wire [0:7] output_row
 );
     reg [0:7] a, b, c, d;
 
@@ -1059,7 +1059,7 @@ endmodule
 
 module MixColumn2RowInverse (
     input wire [0:31] row,
-    output reg [0:7] output_row
+    output wire [0:7] output_row
 );
     reg [0:7] a, b, c, d;
 
@@ -2118,7 +2118,7 @@ endmodule
 
 module MixColumn3RowInverse (
     input wire [0:31] row,
-    output reg [0:7] output_row
+    output wire [0:7] output_row
 );
     reg [0:7] a, b, c, d;
 
@@ -3177,7 +3177,7 @@ endmodule
 
 module MixColumn4RowInverse (
     input wire [0:31] row,
-    output reg [0:7] output_row
+    output wire [0:7] output_row
 );
     reg [0:7] a, b, c, d;
 
@@ -4236,7 +4236,7 @@ endmodule
 
 module MixColumnInverse (
     input wire [0:31] row,
-    input reg [0:31] output_row
+    output wire [0:31] output_row
 );
     wire [0:7] a, b, c, d;
 

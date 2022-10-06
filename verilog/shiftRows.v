@@ -1,6 +1,6 @@
 module ShiftRows (
     input wire [0:127] state,
-    output reg [0:127] new_state
+    output wire [0:127] new_state
 );
 
     assign new_state[0 * 8: 0 * 8 + 7] = state[0 * 8: 0 * 8 + 7];
