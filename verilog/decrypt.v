@@ -19,6 +19,7 @@ module Decrypt (
     reg [0:127] key2;
     reg [0:127] key_final;
     reg [0:127] previous_state_final;
+    reg [0:127] previous_state_from_ciphertext;
     reg [0:127] previous_state_start;
 
     KeyExpansionDecrypt keyExpansionModule(clk, reset, key_expansion_input, keys);
@@ -32,7 +33,7 @@ module Decrypt (
         for (j = 0; j < 4; j = j + 1) begin
             always @(posedge clk) begin
                 if(enable == 1'b1 ) begin
-                    previous_state[32 * i + 8 * j: 32 * i + 8 * j + 7] = ciphertext[32 * j + 8 * i: 32 * j + 8 * i + 7];
+                    previous_state_start[32 * i + 8 * j: 32 * i + 8 * j + 7] = ciphertext[32 * j + 8 * i: 32 * j + 8 * i + 7];
                 end
             end    
         end
@@ -43,7 +44,6 @@ module Decrypt (
         if(enable == 1'b0) begin            
             case (stage_num[0:3])
                 4'd0: begin
-                        previous_state_start <= previous_state;
                         key1[0:127] <= keys[0 * 128 : 0 * 128 + 127];
                         key2[0:127] <= keys[1 * 128 : 1 * 128 + 127];
                         stage_num <= stage_num + 1; 
@@ -99,12 +99,10 @@ module Decrypt (
             key_expansion_input = key[0:127];
             stage_num <= 4'd0;
         end
-    end
 
-    always @(posedge clk) begin
         if (reset == 1'b1) begin
             stage_num <= 4'd11;
-        end        
+        end   
     end
     
 endmodule

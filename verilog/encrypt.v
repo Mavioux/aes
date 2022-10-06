@@ -15,10 +15,13 @@ module Encrypt (
     reg [0:3] stage_num;
     reg [0:127] key1;
     reg [0:127] key2;
+    reg [0:127] previous_state_start;
     reg [0:127] previous_state_final;
+    wire [0:127] next_state_start;
 
     KeyExpansion keyExpansionModule(clk, reset, key_expansion_input, keys);
     EncryptBlock encryptBlockModule(previous_state, key_input, next_state);
+    EncryptBlock encryptBlockStartModule(previous_state_start, key_input, next_state_start);
     EncryptFinalBlock EncryptFinalBlockModule(previous_state_final, key1, key2, ciphertext);
 
     genvar i, j;
@@ -27,7 +30,7 @@ module Encrypt (
         for (j = 0; j < 4; j = j + 1) begin
             always @(posedge clk) begin
                 if(enable == 1'b1 ) begin
-                    previous_state[32 * i + 8 * j: 32 * i + 8 * j + 7] = plaintext[32 * j + 8 * i: 32 * j + 8 * i + 7];
+                    previous_state_start[32 * i + 8 * j: 32 * i + 8 * j + 7] = plaintext[32 * j + 8 * i: 32 * j + 8 * i + 7];
                 end
             end    
         end
@@ -42,7 +45,7 @@ module Encrypt (
                         stage_num <= stage_num + 1; 
                     end
                 4'd1: begin
-                        previous_state <= next_state;
+                        previous_state <= next_state_start;
                         key_input[0:127] <= keys[1 * 128 : 1 * 128 + 127];
                         stage_num <= stage_num + 1; 
                     end
@@ -93,12 +96,14 @@ module Encrypt (
             key_expansion_input = key[0:127];
             stage_num <= 4'd0;
         end
+
+        if (reset == 1'b1) begin
+            stage_num <= 4'd11;
+        end  
     end
 
     always @(posedge clk) begin
-        if (reset == 1'b1) begin
-            stage_num <= 4'd11;
-        end        
+              
     end
     
 endmodule
